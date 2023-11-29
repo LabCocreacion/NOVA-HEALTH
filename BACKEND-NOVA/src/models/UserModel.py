@@ -1,7 +1,7 @@
 from database.db import get_connection
 from .entities.User import User
 
-class UserModel():
+class UserModel:
 
     @classmethod
     def get_users(self):
@@ -9,17 +9,40 @@ class UserModel():
             connection = get_connection()
             users = []
 
-            with connection.cursor() as cursor:
-                # Se puede usar tambien un procedimiento almacenado
-                cursor.execute("SELECT id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive FROM usuario ORDER BY creationdate ASC")
+            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive"]
+
+            with connection, connection.cursor() as cursor:
+                cursor.execute(f"SELECT {', '.join(columns)} FROM usuario ORDER BY creationdate ASC")
                 resultset = cursor.fetchall()
 
                 for row in resultset:
-                    user = User(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8], row[9])
+                    user_data = dict(zip(columns, row))
+                    user = User(**user_data)
                     users.append(user)
 
-            connection.close()
             return users
 
-        except Exception as ex :
+        except Exception as ex:
+            raise Exception(ex)
+
+    @classmethod
+    def get_user(self,id):
+        try:
+            connection = get_connection()
+
+            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive"]
+
+            with connection, connection.cursor() as cursor:
+                cursor.execute(f"SELECT {', '.join(columns)} FROM usuario WHERE id = %s",(id,))
+                row = cursor.fetchone()
+
+                user = None
+
+                if row is not None:
+                    user_data = dict(zip(columns, row))
+                    user = User(**user_data)
+
+            return user
+
+        except Exception as ex:
             raise Exception(ex)

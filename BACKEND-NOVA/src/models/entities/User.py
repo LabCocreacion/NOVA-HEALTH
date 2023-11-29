@@ -1,3 +1,5 @@
+from utils.DateFormat import DateFormat
+
 class User():
 
     def __init__(self, id, name=None, lastname=None, email=None, age=None, numberphone=None, address=None, birthdate=None, creationdate=None, isactive=None) -> None:
@@ -22,7 +24,7 @@ class User():
             'numberphone' : self.numberphone,
             'address' : self.address,
             'birthdate' : self.birthdate,
-            'creationdate' : self.creationdate,
+            'creationdate' : DateFormat.convert_date(self.creationdate),
             'isactive' : self.isactive
         }
         

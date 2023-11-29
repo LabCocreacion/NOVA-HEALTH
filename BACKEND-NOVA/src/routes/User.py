@@ -5,7 +5,6 @@ from models.UserModel import UserModel
 main = Blueprint('user_blueprint', __name__)
 
 @main.route('/')
-#@cross_origin(supports_credentials=True)
 def get_users():
     try:
         users = UserModel.get_users()
@@ -14,4 +13,15 @@ def get_users():
         return jsonify(users_json)
     except Exception as ex:
         return jsonify({'message': str(ex)}),500
-        
+
+@main.route('/<id>')
+def get_user(id):
+    try:
+        user = UserModel.get_user(id)
+        print(user)
+        if user is not None:
+            return jsonify(user.to_JSON())
+        else:
+            return jsonify({}), 404
+    except Exception as ex:
+        return jsonify({'message': str(ex)}),500
