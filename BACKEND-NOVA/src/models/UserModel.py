@@ -3,6 +3,18 @@ from .entities.User import User
 
 class UserModel:
 
+    def __init__(self, id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive):
+        self.id = id
+        self.name = name
+        self.lastname = lastname
+        self.email = email
+        self.age = age
+        self.numberphone = numberphone
+        self.address = address
+        self.birthdate = birthdate
+        self.creationdate = creationdate
+        self.isactive = isactive
+
     @classmethod
     def get_users(self):
         try:
@@ -43,6 +55,22 @@ class UserModel:
                     user = User(**user_data)
 
             return user
+
+        except Exception as ex:
+            raise Exception(ex)
+    
+    @classmethod
+    def add_user(self, user):
+        try:
+            connection = get_connection()
+
+            with connection, connection.cursor() as cursor:
+                cursor.execute(f"INSERT INTO usuario (id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",(user.id, user.name, user.lastname, user.email, user.age, user.numberphone, user.address, user.birthdate, user.creationdate, user.isactive))
+                affected_rows = cursor.rowcount
+                connection.commit()
+
+            connection.close()
+            return affected_rows
 
         except Exception as ex:
             raise Exception(ex)
