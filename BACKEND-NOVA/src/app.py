@@ -12,7 +12,7 @@ def options():
     return {'Allow': 'GET, POST'}, 200
 
 def page_not_found(error):
-    return "<h1> Pagina de NOVA no econtrada </h1>",404
+    return "<h1> Pagina no econtrada </h1>",404
 
 if __name__ == '__main__':
     #app.config.from_object(config['development'])
