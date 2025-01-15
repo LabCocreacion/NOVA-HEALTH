@@ -94,10 +94,8 @@ class UserModel:
                 user = None
 
                 if row is not None:
-                    print('Entro al if')
                     user_data = dict(zip(columns, row))
                     user = User(**user_data)
-                    print(f"User data: {user_data}")
 
                 return user
 

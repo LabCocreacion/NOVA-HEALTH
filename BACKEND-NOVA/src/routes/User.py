@@ -1,10 +1,12 @@
 from flask import Blueprint, jsonify, request
 from models.UserModel import UserModel
 import uuid 
-from datetime import datetime
+from datetime import datetime, timedelta
 from utils.DateFormat import DateFormat
-#from flask_cors import cross_origin
+import jwt
+from decouple import config
 
+SECRET_KEY = config('SECRET_KEY')
 main = Blueprint('user_blueprint', __name__)
 
 @main.route('/')
@@ -55,13 +57,18 @@ def add_user():
 
 @main.route('/login', methods=['POST'])
 def login():
-    try:
-        email = request.json['email']
-        password = request.json['password']
-        user = UserModel.login(email, password)
-        if user is not None:
-            return jsonify(user.to_JSON())
-        else:
-            return jsonify({}), 404
-    except Exception as ex:
-        return jsonify({'message': str(ex)}),500
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    
+    user = UserModel.login(email, password)
+    
+    if user:
+        token = jwt.encode({
+            'user_id': user.id,
+            'exp': datetime.utcnow() + timedelta(hours=1)
+        }, SECRET_KEY, algorithm='HS256')
+        
+        return jsonify({"message": "Login successful", "token": token}), 200
+    else:
+        return jsonify({"message": "Invalid credentials"}), 401
