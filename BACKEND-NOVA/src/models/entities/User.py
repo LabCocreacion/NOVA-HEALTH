@@ -2,7 +2,7 @@ from utils.DateFormat import DateFormat
 
 class User():
 
-    def __init__(self, id, name=None, lastname=None, email=None, age=None, numberphone=None, address=None, birthdate=None, creationdate=None, isactive=None) -> None:
+    def __init__(self, id, name=None, lastname=None, email=None, age=None, numberphone=None, address=None, birthdate=None, creationdate=None, isactive=None, password=None, project=None) -> None:
         self.id = id
         self.name = name
         self.lastname = lastname
@@ -13,6 +13,8 @@ class User():
         self.birthdate = birthdate
         self.creationdate = creationdate
         self.isactive = isactive
+        self.password = password
+        self.project = project
     
     def to_JSON(self):
         return {
@@ -25,6 +27,8 @@ class User():
             'address' : self.address,
             'birthdate' : self.birthdate,
             'creationdate' : DateFormat.convert_date(self.creationdate),
-            'isactive' : self.isactive
+            'isactive' : self.isactive,
+            'password' : self.password,
+            'project' : self.project
         }
         

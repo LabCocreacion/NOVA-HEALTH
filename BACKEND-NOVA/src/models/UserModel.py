@@ -3,7 +3,7 @@ from .entities.User import User
 
 class UserModel:
 
-    def __init__(self, id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive):
+    def __init__(self, id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive, password, project):
         self.id = id
         self.name = name
         self.lastname = lastname
@@ -14,6 +14,8 @@ class UserModel:
         self.birthdate = birthdate
         self.creationdate = creationdate
         self.isactive = isactive
+        self.password = password
+        self.project = project
 
     @classmethod
     def get_users(self):
@@ -21,7 +23,7 @@ class UserModel:
             connection = get_connection()
             users = []
 
-            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive"]
+            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project"]
 
             with connection, connection.cursor() as cursor:
                 cursor.execute(f"SELECT {', '.join(columns)} FROM usuario ORDER BY creationdate ASC")
@@ -42,7 +44,7 @@ class UserModel:
         try:
             connection = get_connection()
 
-            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive"]
+            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project"]
 
             with connection, connection.cursor() as cursor:
                 cursor.execute(f"SELECT {', '.join(columns)} FROM usuario WHERE id = %s",(id,))
@@ -65,12 +67,39 @@ class UserModel:
             connection = get_connection()
 
             with connection, connection.cursor() as cursor:
-                cursor.execute(f"INSERT INTO usuario (id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",(user.id, user.name, user.lastname, user.email, user.age, user.numberphone, user.address, user.birthdate, user.creationdate, user.isactive))
+                cursor.execute(f"INSERT INTO usuario (id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive, password, project) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (user.id, user.name, user.lastname, user.email, user.age, user.numberphone, user.address, user.birthdate, user.creationdate, user.isactive, user.password, user.project))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
             connection.close()
             return affected_rows
+
+        except Exception as ex:
+            raise Exception(ex)
+    
+    @classmethod
+    def login(self, email, password):
+        try:
+            connection = get_connection()
+
+            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project"]
+            query = f"SELECT {', '.join(columns)} FROM usuario WHERE email = %s AND password = %s"
+
+            # Create the full query string with values for printing
+            full_query = query.replace("%s", "'{}'").format(email, password)
+
+            with connection, connection.cursor() as cursor:
+                cursor.execute(query, (email, password))
+                row = cursor.fetchone()
+                user = None
+
+                if row is not None:
+                    print('Entro al if')
+                    user_data = dict(zip(columns, row))
+                    user = User(**user_data)
+                    print(f"User data: {user_data}")
+
+                return user
 
         except Exception as ex:
             raise Exception(ex)

@@ -52,3 +52,16 @@ def add_user():
 
     except Exception as ex:
         return jsonify({'message': str(ex)}),500
+
+@main.route('/login', methods=['POST'])
+def login():
+    try:
+        email = request.json['email']
+        password = request.json['password']
+        user = UserModel.login(email, password)
+        if user is not None:
+            return jsonify(user.to_JSON())
+        else:
+            return jsonify({}), 404
+    except Exception as ex:
+        return jsonify({'message': str(ex)}),500

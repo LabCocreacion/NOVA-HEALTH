@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response
 from config import config
 from flask_cors import CORS
 # import source routes
@@ -9,7 +9,7 @@ cors = CORS(app, resources={r"/api/*": {"origins": "http://localhost:4200"}}, su
 
 @app.route('/api/users', methods=['OPTIONS'])
 def options():
-    return {'Allow': 'GET, POST'}, 200
+    return Response({'Allow': 'GET, POST'}, status=200, mimetype='application/json; charset=utf-8')
 
 def page_not_found(error):
     return "<h1> Pagina no econtrada </h1>",404
