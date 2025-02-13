@@ -3,7 +3,7 @@ from .entities.User import User
 
 class UserModel:
 
-    def __init__(self, id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive, password, project):
+    def __init__(self, id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive, password, project, rol, instituto):
         self.id = id
         self.name = name
         self.lastname = lastname
@@ -16,6 +16,8 @@ class UserModel:
         self.isactive = isactive
         self.password = password
         self.project = project
+        self.rol = rol
+        self.instituto = instituto
 
     @classmethod
     def get_users(self):
@@ -23,7 +25,7 @@ class UserModel:
             connection = get_connection()
             users = []
 
-            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project"]
+            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project", "rol", "instituto"]
 
             with connection, connection.cursor() as cursor:
                 cursor.execute(f"SELECT {', '.join(columns)} FROM usuario ORDER BY creationdate ASC")
@@ -44,7 +46,7 @@ class UserModel:
         try:
             connection = get_connection()
 
-            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project"]
+            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project", "rol", "instituto"]
 
             with connection, connection.cursor() as cursor:
                 cursor.execute(f"SELECT {', '.join(columns)} FROM usuario WHERE id = %s",(id,))
@@ -67,7 +69,7 @@ class UserModel:
             connection = get_connection()
 
             with connection, connection.cursor() as cursor:
-                cursor.execute(f"INSERT INTO usuario (id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive, password, project) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (user.id, user.name, user.lastname, user.email, user.age, user.numberphone, user.address, user.birthdate, user.creationdate, user.isactive, user.password, user.project))
+                cursor.execute(f"INSERT INTO usuario (id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive, password, project, rol, instituto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (user.id, user.name, user.lastname, user.email, user.age, user.numberphone, user.address, user.birthdate, user.creationdate, user.isactive, user.password, user.project, user.rol, user.instituto))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -82,7 +84,7 @@ class UserModel:
         try:
             connection = get_connection()
 
-            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project"]
+            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project", "rol", "instituto"]
             query = f"SELECT {', '.join(columns)} FROM usuario WHERE email = %s AND password = %s"
 
             # Create the full query string with values for printing
