@@ -1,17 +1,18 @@
 from database.db import get_connection
 from .entities.User import User
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
 
 class UserModel:
 
-    def __init__(self, id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive, password, project, rol, instituto):
+    def __init__(self, id, name, lastname, email, identificacion, numberphone, address, creationdate, isactive, password, project, rol, instituto):
         self.id = id
         self.name = name
         self.lastname = lastname
         self.email = email
-        self.age = age
+        self.identificacion = identificacion
         self.numberphone = numberphone
         self.address = address
-        self.birthdate = birthdate
         self.creationdate = creationdate
         self.isactive = isactive
         self.password = password
@@ -25,7 +26,7 @@ class UserModel:
             connection = get_connection()
             users = []
 
-            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project", "rol", "instituto"]
+            columns = ["id", "name", "lastname", "email", "identificacion", "numberphone", "address", "creationdate", "isactive", "password", "project", "rol", "instituto"]
 
             with connection, connection.cursor() as cursor:
                 cursor.execute(f"SELECT {', '.join(columns)} FROM usuario ORDER BY creationdate ASC")
@@ -46,7 +47,7 @@ class UserModel:
         try:
             connection = get_connection()
 
-            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project", "rol", "instituto"]
+            columns = ["id", "name", "lastname", "email", "identificacion", "numberphone", "address", "creationdate", "isactive", "password", "project", "rol", "instituto"]
 
             with connection, connection.cursor() as cursor:
                 cursor.execute(f"SELECT {', '.join(columns)} FROM usuario WHERE id = %s",(id,))
@@ -69,7 +70,7 @@ class UserModel:
             connection = get_connection()
 
             with connection, connection.cursor() as cursor:
-                cursor.execute(f"INSERT INTO usuario (id, name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive, password, project, rol, instituto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (user.id, user.name, user.lastname, user.email, user.age, user.numberphone, user.address, user.birthdate, user.creationdate, user.isactive, user.password, user.project, user.rol, user.instituto))
+                cursor.execute(f"INSERT INTO usuario (id, name, lastname, email, identificacion, numberphone, address, creationdate, isactive, password, project, rol, instituto) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (user.id, user.name, user.lastname, user.email, user.identificacion, user.numberphone, user.address, user.creationdate, user.isactive, user.password, user.project, user.rol, user.instituto))
                 affected_rows = cursor.rowcount
                 connection.commit()
 
@@ -84,7 +85,7 @@ class UserModel:
         try:
             connection = get_connection()
 
-            columns = ["id", "name", "lastname", "email", "age", "numberphone", "address", "birthdate", "creationdate", "isactive", "password", "project", "rol", "instituto"]
+            columns = ["id", "name", "lastname", "email", "identificacion", "numberphone", "address", "creationdate", "isactive", "password", "project", "rol", "instituto"]
             query = f"SELECT {', '.join(columns)} FROM usuario WHERE email = %s AND password = %s"
 
             # Create the full query string with values for printing
@@ -100,6 +101,26 @@ class UserModel:
                     user = User(**user_data)
 
                 return user
+
+        except Exception as ex:
+            raise Exception(ex)
+    
+    @staticmethod
+    def get_user_by_email(email):
+        try:
+            connection = get_connection()
+            columns = ["id", "name", "lastname", "email", "identificacion", "numberphone", "address", "creationdate", "isactive", "password", "project", "rol", "instituto"]
+
+            with connection, connection.cursor() as cursor:
+                cursor.execute(f"SELECT {', '.join(columns)} FROM usuario WHERE email = %s", (email,))
+                row = cursor.fetchone()
+                user = None
+
+                if row is not None:
+                    user_data = dict(zip(columns, row))
+                    user = User(**user_data)
+
+            return user
 
         except Exception as ex:
             raise Exception(ex)

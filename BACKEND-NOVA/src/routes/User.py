@@ -38,13 +38,16 @@ def add_user():
         name = request.json['name']
         lastname = request.json['lastname']
         email = request.json['email']
-        age = request.json['age']
+        identificacion = request.json['identificacion']
         numberphone = request.json['numberphone']
         address = request.json['address']
-        birthdate = request.json['birthdate']
         creationdate = DateFormat.convert_date(datetime.now())
         isactive = request.json['isactive']
-        user = UserModel(id,name, lastname, email, age, numberphone, address, birthdate, creationdate, isactive)
+        password = request.json['password']
+        project = request.json['project']
+        rol = request.json['rol']
+        instituto = request.json['instituto']
+        user = UserModel(id,name, lastname, email, identificacion, numberphone, address, creationdate, isactive, password, project, rol, instituto)
         affected_rows = UserModel.add_user(user)
 
         if(affected_rows > 0):
@@ -54,6 +57,18 @@ def add_user():
 
     except Exception as ex:
         return jsonify({'message': str(ex)}),500
+
+@main.route('/check-email', methods=['GET'])
+def check_email():
+    email = request.args.get('email')
+    try:
+        user = UserModel.get_user_by_email(email)
+        if user:
+            return jsonify({'exists': True}), 200
+        else:
+            return jsonify({'exists': False}), 200
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
 
 @main.route('/login', methods=['POST'])
 def login():
