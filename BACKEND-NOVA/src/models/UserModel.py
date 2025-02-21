@@ -124,3 +124,23 @@ class UserModel:
 
         except Exception as ex:
             raise Exception(ex)
+    
+    @classmethod
+    def get_user_by_identification(self, identification):
+        try:
+            connection = get_connection()
+            columns = ["id", "name", "lastname", "email", "identificacion", "numberphone", "address", "creationdate", "isactive", "password", "project", "rol", "instituto"]
+
+            with connection, connection.cursor() as cursor:
+                cursor.execute(f"SELECT {', '.join(columns)} FROM usuario WHERE identificacion = %s", (identification,))
+                row = cursor.fetchone()
+                user = None
+
+                if row is not None:
+                    user_data = dict(zip(columns, row))
+                    user = User(**user_data)
+
+            return user
+
+        except Exception as ex:
+            raise Exception(ex)

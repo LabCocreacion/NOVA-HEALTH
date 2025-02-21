@@ -87,3 +87,14 @@ def login():
         return jsonify({"message": "Login successful", "token": token, "userName": user.name, "userProject": user.project, "userRol": user.rol, "userIdent": user.identificacion, "userInstitucion": user.instituto, "userEmail": email, "userPhone": user.numberphone}), 200
     else:
         return jsonify({"message": "Invalid credentials"}), 401
+
+@main.route('/getUserByIdentification/<string:identification>', methods=['GET'])
+def getUserByIdentification(identification):
+    try:
+        user = UserModel.get_user_by_identification(identification)
+        if user:
+            return jsonify(user.to_JSON()), 200
+        else:
+            return jsonify({}), 404
+    except Exception as ex:
+        return jsonify({'message': str(ex)}), 500
